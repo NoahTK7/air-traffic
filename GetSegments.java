@@ -10,7 +10,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class GetSegments {
 
   public static void main(String[] args) throws Exception {
-    // TODO: get number of decimals to round to from args and make configuration object
+    // TODO: get other parameters from args and make configuration object
     if (args.length != 2) {
       System.err.println("Usage: GetSegments <input path> <output path>");
       System.exit(-1);
@@ -24,8 +24,12 @@ public class GetSegments {
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
     
     job.setMapperClass(GetSegmentsMapper.class);
-    job.setCombinerClass(GetSegmentsReducer.class);
     job.setReducerClass(GetSegmentsReducer.class);
+
+//    job.setNumReduceTasks(1);
+
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(Text.class);
 
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);

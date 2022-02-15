@@ -7,13 +7,16 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.log4j.Logger;
 
 public class GetSegmentsMapper
-  extends Mapper<LongWritable, Text, Text, IntWritable> {
+  extends Mapper<LongWritable, Text, Text, Text> {
 
-  private final static IntWritable one = new IntWritable(1);
-  private Text word = new Text();
+  private Text keyText = new Text();
+  private Text valText = new Text();
+  // param: number of decimal places in coordinates to round
   private static DecimalFormat df = new DecimalFormat("#.00");
+  private Logger logger = Logger.getLogger(GetSegmentsMapper.class);
 
   @Override
   public void map(LongWritable key, Text value, Context context)
@@ -35,8 +38,10 @@ public class GetSegmentsMapper
         return;
       }
 
-      word.set(df.format(lat1) + "|" + df.format(lon1) + "|" + df.format(lat2) + "|" + df.format(lon2));
-      context.write(word, one);
+      keyText.set(df.format(lat1) + "|" + df.format(lon1) + "|" + df.format(lat2) + "|" + df.format(lon2));
+      valText.set(elements[0]);
+//      logger.info("key: " + keyText.toString() + ", value: " + valText.toString());
+      context.write(keyText, valText);
     } catch (Exception e) {
       System.out.println("Exception occurred: " + e + " while processing line: " + line);
     }
