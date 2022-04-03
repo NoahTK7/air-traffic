@@ -22,6 +22,7 @@ public class CountRecs {
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
     
     job.setMapperClass(CountRecsMapper.class);
+    job.setCombinerClass(CountRecsReducer.class);
     job.setReducerClass(CountRecsReducer.class);
 
     job.setNumReduceTasks(1);
