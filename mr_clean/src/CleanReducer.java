@@ -5,18 +5,12 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 
 public class CleanReducer
-  extends Reducer<Text, IntWritable, Text, IntWritable> {
+  extends Reducer<Text, Text, Text, Text> {
   
   @Override
-  public void reduce(Text key, Iterable<IntWritable> values,
+  public void reduce(Text key, Iterable<Text> values,
       Context context)
       throws IOException, InterruptedException {
-
-    int sum = 0;
-    for (IntWritable val : values) {
-      sum += val.get();
-    }
-    
-    context.write(key, new IntWritable(sum));
+    //NO-OP
   }
 }

@@ -21,12 +21,10 @@ public class Clean {
     FileOutputFormat.setOutputPath(job, new Path(args[1]));
     
     job.setMapperClass(CleanMapper.class);
-    job.setReducerClass(CleanReducer.class);
-
-    job.setNumReduceTasks(1);
+    job.setNumReduceTasks(0); // mapper-only job
 
     job.setOutputKeyClass(Text.class);
-    job.setOutputValueClass(IntWritable.class);
+    job.setOutputValueClass(Text.class);
     
     System.exit(job.waitForCompletion(true) ? 0 : 1);
   }
