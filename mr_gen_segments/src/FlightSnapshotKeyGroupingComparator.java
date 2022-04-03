@@ -8,8 +8,9 @@ public class FlightSnapshotKeyGroupingComparator
     }
 
         /**
-        * This comparator controls which keys are grouped
-        * together into a single call to the reduce method
+         * This comparator controls which keys are grouped together into a
+         * single call to the reduce method (all keys with same hex, but any timestamp).
+         * This class basically defines how keys are grouped based on which keys are considered equivalent.
         */
         @Override
         public int compare(WritableComparable wc1, WritableComparable wc2) {
