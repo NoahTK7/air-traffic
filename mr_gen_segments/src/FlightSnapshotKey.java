@@ -52,8 +52,8 @@ public class FlightSnapshotKey
         if (compareValue == 0) {
             compareValue = timestamp.compareTo(other.getTimestamp());
         }
-        //return compareValue;    // sort ascending
-        return -1*compareValue;   // sort descending
+        return compareValue;    // sort ascending
+        //return -1*compareValue;   // sort descending
     }
 
     @Override
