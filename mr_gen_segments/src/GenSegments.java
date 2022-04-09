@@ -25,11 +25,6 @@ public class GenSegments {
 
     job.setReducerClass(GenSegmentsReducer.class);
 
-    // additional classes need for secondary sorting of map output
-    // adapted from https://www.oreilly.com/library/view/data-algorithms/9781491906170/ch01.html
-    job.setPartitionerClass(FlightSnapshotKeyPartitioner.class);
-    job.setGroupingComparatorClass(FlightSnapshotKeyGroupingComparator.class);
-
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(FlightSegment.class);
     

@@ -7,6 +7,8 @@ import java.io.IOException;
 public class GenSegmentsMapper
   extends Mapper<LongWritable, Text, FlightSnapshotKey, FlightSnapshot> {
 
+  public final long INTERVAL = 300; // 5 minutes
+
   FlightSnapshotKey reducerKey = new FlightSnapshotKey();
   FlightSnapshot reducerValue = new FlightSnapshot();
 
@@ -21,11 +23,13 @@ public class GenSegmentsMapper
     long ts = Long.parseLong(tokens[0]);
     double lat = Double.parseDouble(tokens[2]);
     double lon = Double.parseDouble(tokens[3]);
-    String registration = tokens[4];
-    String flightType = tokens[5];
 
     reducerKey.set(hex, ts);
-    reducerValue.set(ts, lat, lon, registration, flightType);
+    reducerValue.set(lat, lon);
+
+    context.write(reducerKey, reducerValue);
+
+    reducerKey.set(hex, ts + INTERVAL);
 
     context.write(reducerKey, reducerValue);
   }

@@ -1,11 +1,14 @@
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Iterator;
 
 public class GenSegmentsReducer
   extends Reducer<FlightSnapshotKey, FlightSnapshot, Text, Text> {
+
+  private final Logger LOG = Logger.getLogger(GenSegmentsReducer.class);
 
   private final Text outputKey = new Text();
   private final Text outputValue = new Text();
@@ -19,14 +22,18 @@ public class GenSegmentsReducer
 
     Iterator<FlightSnapshot> snapshots = values.iterator();
 
-    FlightSnapshot currentSnapshot = snapshots.next();
-    while (snapshots.hasNext()) {
-      // TODO: how to handle every 5 minutes?
-      FlightSnapshot nextSnapshot = snapshots.next();
-      FlightSegment segment = new FlightSegment(currentSnapshot, nextSnapshot);
-      outputValue.set(segment.toString());
-      context.write(outputKey, outputValue);
-      currentSnapshot = nextSnapshot;
+    FlightSnapshot snapshot1 = snapshots.next();
+    if (!snapshots.hasNext()) {
+      // only one snapshot, so no segment
+      // (probably within 5 minutes of end of flight/data window, so no endpoint to make a segment)
+      return;
     }
+    FlightSnapshot snapshot2 = snapshots.next();
+    if (snapshots.hasNext()) {
+      LOG.warn("More than two snapshots for key " + key.getHex());
+    }
+    FlightSegment segment = new FlightSegment(snapshot1, snapshot2);
+    outputValue.set(segment.toString());
+    context.write(outputKey, outputValue);
   }
 }
