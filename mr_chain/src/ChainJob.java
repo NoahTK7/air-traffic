@@ -38,19 +38,14 @@ public class ChainJob {
     ChainMapper.addMapper(mainJob, GenSegmentsMapper.class, Text.class, Text.class,
             FlightSnapshotKey.class, FlightSnapshot.class, mapBConf);
 
-    mainJob.setMapOutputKeyClass(FlightSnapshotKey.class);
-    mainJob.setMapOutputValueClass(FlightSnapshot.class);
-
     Configuration reduceConf = new Configuration(false);
     ChainReducer.setReducer(mainJob, GenSegmentsReducer.class, FlightSnapshotKey.class, FlightSnapshot.class,
             Text.class, FlightSegment.class,  reduceConf);
 
-    Configuration mapCConf = new Configuration(false);
     ChainReducer.addMapper(mainJob, RemoveStationaryMapper.class, Text.class, FlightSegment.class,
-            Text.class, FlightSegment.class, mapCConf);
+            Text.class, FlightSegment.class, null);
 
-    mainJob.setOutputKeyClass(Text.class);
-    mainJob.setOutputValueClass(FlightSegment.class);
+    mainJob.setNumReduceTasks(10);
 
     System.exit(mainJob.waitForCompletion(true) ? 0 : 1);
   }
