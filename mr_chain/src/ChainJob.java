@@ -1,4 +1,5 @@
-import clean.CleanMapper;
+import clean.RemoveStationaryMapper;
+import clean.RoundCoordinatesMapper;
 import gensegments.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -30,19 +31,26 @@ public class ChainJob {
     FileOutputFormat.setOutputPath(mainJob, new Path(args[1]));
 
     Configuration mapAConf = new Configuration(false);
-    ChainMapper.addMapper(mainJob, CleanMapper.class, LongWritable.class, Text.class,
+    ChainMapper.addMapper(mainJob, RoundCoordinatesMapper.class, LongWritable.class, Text.class,
             Text.class, Text.class, mapAConf);
 
     Configuration mapBConf = new Configuration(false);
     ChainMapper.addMapper(mainJob, GenSegmentsMapper.class, Text.class, Text.class,
             FlightSnapshotKey.class, FlightSnapshot.class, mapBConf);
 
+    mainJob.setMapOutputKeyClass(FlightSnapshotKey.class);
+    mainJob.setMapOutputValueClass(FlightSnapshot.class);
+
     Configuration reduceConf = new Configuration(false);
-    ChainReducer.setReducer(mainJob, GenSegmentsReducer.class, FlightSnapshot.class, FlightSnapshotKey.class,
-            Text.class, Text.class,  reduceConf);
+    ChainReducer.setReducer(mainJob, GenSegmentsReducer.class, FlightSnapshotKey.class, FlightSnapshot.class,
+            Text.class, FlightSegment.class,  reduceConf);
+
+    Configuration mapCConf = new Configuration(false);
+    ChainReducer.addMapper(mainJob, RemoveStationaryMapper.class, Text.class, FlightSegment.class,
+            Text.class, FlightSegment.class, mapCConf);
 
     mainJob.setOutputKeyClass(Text.class);
-    mainJob.setOutputValueClass(Text.class);
+    mainJob.setOutputValueClass(FlightSegment.class);
 
     System.exit(mainJob.waitForCompletion(true) ? 0 : 1);
   }

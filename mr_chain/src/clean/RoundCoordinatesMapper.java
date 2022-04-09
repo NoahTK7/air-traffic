@@ -7,9 +7,10 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-public class CleanMapper
+public class RoundCoordinatesMapper
   extends Mapper<LongWritable, Text, Text, Text> {
 
+  private static final Text outputKey = new Text("");
   private static final Text outValue = new Text();
   private static final DecimalFormat df = new DecimalFormat("0.00");
 
@@ -28,6 +29,6 @@ public class CleanMapper
 
     outValue.set(String.join(",", tokens));
 
-    context.write(null, outValue);
+    context.write(outputKey, outValue);
   }
 }

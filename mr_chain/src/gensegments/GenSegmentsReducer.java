@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.Iterator;
 
 public class GenSegmentsReducer
-  extends Reducer<FlightSnapshotKey, FlightSnapshot, Text, Text> {
+  extends Reducer<FlightSnapshotKey, FlightSnapshot, Text, FlightSegment> {
 
   private final Logger LOG = Logger.getLogger(GenSegmentsReducer.class);
 
   private final Text outputKey = new Text();
-  private final Text outputValue = new Text();
+  private final FlightSegment outputValue = new FlightSegment();
 
   @Override
   public void reduce(FlightSnapshotKey key, Iterable<FlightSnapshot> values,
@@ -34,8 +34,7 @@ public class GenSegmentsReducer
     if (snapshots.hasNext()) {
       LOG.warn("More than two snapshots for key " + key.getHex());
     }
-    FlightSegment segment = new FlightSegment(snapshot1, snapshot2);
-    outputValue.set(segment.toString());
+    outputValue.set(snapshot1, snapshot2);
     context.write(outputKey, outputValue);
   }
 }

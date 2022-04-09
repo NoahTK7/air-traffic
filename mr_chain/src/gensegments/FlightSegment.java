@@ -37,6 +37,13 @@ public class FlightSegment implements Writable {
         this.lon2.set(lon2);
     }
 
+    public void set(FlightSnapshot fs1, FlightSnapshot fs2) {
+        this.lat1.set(fs1.getLat().get());
+        this.lon1.set(fs1.getLon().get());
+        this.lat2.set(fs2.getLat().get());
+        this.lon2.set(fs2.getLon().get());
+    }
+
     public DoubleWritable getLat1() {
         return lat1;
     }
@@ -70,6 +77,6 @@ public class FlightSegment implements Writable {
     }
 
     public String toString() {
-        return lat1 + "|" + lon1 + "|" + lat2 + "|" + lon2;
+        return lat1 + "," + lon1 + "|" + lat2 + "," + lon2;
     }
 }

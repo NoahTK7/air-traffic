@@ -59,6 +59,11 @@ public class FlightSnapshotKey
     }
 
     @Override
+    public int hashCode() {
+        return hex.hashCode() + timestamp.hashCode();
+    }
+
+    @Override
     public String toString() {
         return hex + "," + timestamp;
     }
