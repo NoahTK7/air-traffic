@@ -1,8 +1,8 @@
 package gensegments;
 
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -10,13 +10,15 @@ public class GenSegmentsMapper
   extends Mapper<Text, Text, FlightSnapshotKey, FlightSnapshot> {
 
   public final long INTERVAL = 300; // 5 minutes
-
-  FlightSnapshotKey reducerKey = new FlightSnapshotKey();
-  FlightSnapshot reducerValue = new FlightSnapshot();
+  private final Logger logger = Logger.getLogger(GenSegmentsMapper.class);
 
   @Override
   public void map(Text key, Text value, Context context)
       throws IOException, InterruptedException {
+
+    FlightSnapshotKey reducerKey1 = new FlightSnapshotKey();
+    FlightSnapshotKey reducerKey2 = new FlightSnapshotKey();
+    FlightSnapshot reducerValue = new FlightSnapshot();
 
     String line = value.toString();
     String[] tokens = line.split(",");
@@ -26,13 +28,12 @@ public class GenSegmentsMapper
     double lat = Double.parseDouble(tokens[2]);
     double lon = Double.parseDouble(tokens[3]);
 
-    reducerKey.set(hex, ts);
     reducerValue.set(lat, lon);
 
-    context.write(reducerKey, reducerValue);
+    reducerKey1.set(hex, ts);
+    context.write(reducerKey1, reducerValue);
 
-    reducerKey.set(hex, ts + INTERVAL);
-
-    context.write(reducerKey, reducerValue);
+    reducerKey2.set(hex, ts + INTERVAL);
+    context.write(reducerKey2, reducerValue);
   }
 }

@@ -77,6 +77,6 @@ public class FlightSegment implements Writable {
     }
 
     public String toString() {
-        return lat1 + "," + lon1 + "|" + lat2 + "," + lon2;
+        return lat1 + "," + lon1 + "," + lat2 + "," + lon2;
     }
 }

@@ -15,7 +15,8 @@ import java.io.IOException;
 
 public class ChainJob {
 
-  public static void main (String[] args)throws IOException,InterruptedException,ClassNotFoundException{
+  public static void main (String[] args)
+          throws IOException, InterruptedException, ClassNotFoundException {
 
     if (args.length != 2) {
       System.err.println("Usage: ChainJob <input path> <output path>");
@@ -43,9 +44,7 @@ public class ChainJob {
             Text.class, FlightSegment.class,  reduceConf);
 
     ChainReducer.addMapper(mainJob, RemoveStationaryMapper.class, Text.class, FlightSegment.class,
-            Text.class, FlightSegment.class, null);
-
-    mainJob.setNumReduceTasks(10);
+            Text.class, Text.class, null);
 
     System.exit(mainJob.waitForCompletion(true) ? 0 : 1);
   }

@@ -14,6 +14,12 @@ public class FlightSnapshot implements Writable {
     public FlightSnapshot() {
     }
 
+    // copy constructor
+    public FlightSnapshot(FlightSnapshot snapshot) {
+        this.lat.set(snapshot.getLat().get());
+        this.lon.set(snapshot.getLon().get());
+    }
+
     public FlightSnapshot(double lat, double lon) {
         this.lat.set(lat);
         this.lon.set(lon);
