@@ -1,6 +1,7 @@
 input/
 output/
 final/
+playground/
 *.iml
 .idea/
 .DS_Store
