@@ -3,7 +3,7 @@
 ## Presentation (recommended)
 Slide deck that summarizes implementation and results found [here](./docs/final-presentation.pdf)
 
-A more detailed write-up is found [here](./docs/kurrack-final-write-up.pdf)
+A more detailed write-up is found [here](./docs/kurrack-final-writeup.pdf)
 
 ## Summary
 I utilized available flight location data to find the most heavily traveled segments of the skies that corrospond to defined routes that planes generally use.
@@ -17,7 +17,7 @@ ADS-B Exchange provides snapshots of global flight data every 5 seconds. They pr
 ## Implementation
 
 ### Step 1 -- Download
-I downloaded the ASD-B snapshot data from the 1st of the past 12 months (available as gzip archives), and extracted the raw json files. (See [code](./gen_segments/get_files.py)) script.)
+I downloaded the ASD-B snapshot data from the 1st of the past 12 months (available as gzip archives), and extracted the raw json files. (See [code](./gen_segments/get_files.py))
 
 ### Step 2 -- Convert JSON to CSV
 I wrote a python script to load each JSON file into memory and write the relevant fields to a CSV file. Notably, I only wrote records to the CSV files that had non-null values for each of those relevant fields; otherwise the record was discarded. (See [code](./json_to_csv/process_full.py))
@@ -101,9 +101,37 @@ GROUP BY seg ORDER BY num_flights DESC LIMIT 1000;
 hive -e 'use ntk9692; SELECT seg, count(*) as num_flights FROM at_seg WHERE dist > 0.1 GROUP BY seg ORDER BY num_flights DESC LIMIT 1000;'  | sed 's/[\t]/,/g'  > top-1000.csv
 ```
 
+###### Wide body aircraft
+
+```SELECT seg, count(*) as num_flights FROM at_seg
+JOIN hex_meta ON (at_seg.id = hex_meta.id)
+WHERE dist > 0.1 AND (aircraft LIKE "%B74%" OR aircraft LIKE "%A380%")
+GROUP BY seg ORDER BY num_flights DESC LIMIT 1000;
+```
+
+```
+hive -e 'use ntk9692; SELECT seg, count(*) as num_flights FROM at_seg JOIN hex_meta ON (at_seg.id = hex_meta.id) WHERE dist > 0.1 AND (aircraft LIKE "%B74%" OR aircraft LIKE "%A380%") GROUP BY seg ORDER BY num_flights DESC LIMIT 1000;' | sed 's/[\t]/,/g'  > top-1000-heavy.csv
+```
+
+##### Narrow body aircraft
+
+```
+SELECT seg, count(*) as num_flights FROM at_seg
+JOIN hex_meta ON (at_seg.id = hex_meta.id)
+WHERE dist > 0.1 AND (aircraft LIKE "%B73%" OR aircraft LIKE "%B75%" OR aircraft LIKE "%A32%" OR aircraft LIKE "%A2%" OR aircraft LIKE "%A31%")
+GROUP BY seg ORDER BY num_flights DESC LIMIT 1000;
+```
+
+
+```
+hive -e 'use ntk9692; SELECT seg, count(*) as num_flights FROM at_seg JOIN hex_meta ON (at_seg.id = hex_meta.id) WHERE dist > 0.1 AND (aircraft LIKE "%B73%" OR aircraft LIKE "%B75%" OR aircraft LIKE "%A32%" OR aircraft LIKE "%A2%" OR aircraft LIKE "%A31%") GROUP BY seg ORDER BY num_flights DESC LIMIT 1000;' | sed 's/[\t]/,/g'  > top-1000-standard.csv
+```
+
 ### Step 8 -- Map Results in ArcGIS
 
 I wrote a python script to transform the flight segments returned by the queries into geoJSON, which can be imported directly into ArcGIS online, a web-based mapping software. The maps with resulting segments are included in the next sections.
+
+(See [code](./map_segments2/gen_geojson.py))
 
 ## Visualizations
 
