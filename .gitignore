@@ -4,3 +4,5 @@ final/
 *.iml
 .idea/
 .DS_Store
+*.zip
+*.pages
